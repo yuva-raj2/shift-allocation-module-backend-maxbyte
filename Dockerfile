@@ -1,7 +1,11 @@
-FROM maven:3.8.5-openjdk-17 AS Build
+FROM maven:3.8.5-openjdk-17 AS build
+WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
-FROM openjdk:17.0.1-jdk-slim
-COPY --from=Build /target/shift-0.0.1-SNAPSHOT.jar shift.jar
+
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/shift-0.0.1-SNAPSHOT.jar app.jar
+
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","shift.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
